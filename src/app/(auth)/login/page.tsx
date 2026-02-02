@@ -2,15 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { authClient } from '@/lib/auth-client';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const router = useRouter();
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +22,16 @@ export default function LoginPage() {
         setError('');
 
         try {
-            // Simulate API call
+            const { data, error } = await authClient.signIn.email({
+                email,
+                password,
+            });
+
+            if (data) {
+                router.push('/dashboard');
+            } else {
+                setError(error?.message || 'Login failed. Please try again.');
+            }
         } catch (err) {
             setError('An error occurred. Please try again.');
         } finally {
