@@ -57,6 +57,8 @@ export default function ProfilePage() {
                 fetchCategories();
             } else if (user.role === 'STUDENT') {
                 fetchProfile();
+            } else if (user.role === 'ADMIN') {
+                fetchProfile();
             } else {
                 setFetchLoading(false);
             }
@@ -79,7 +81,10 @@ export default function ProfilePage() {
 
     const fetchProfile = async () => {
         try {
-            const endpoint = user?.role === 'STUDENT' ? '/students/profile' : '/tutors/profile';
+            let endpoint = '/students/profile';
+            if (user?.role === 'TUTOR') endpoint = '/tutors/profile';
+            if (user?.role === 'ADMIN') endpoint = '/admin/profile';
+            
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
                 method: 'GET',
                 credentials: 'include',
@@ -90,7 +95,7 @@ export default function ProfilePage() {
             
             if (response.ok) {
                 const data = await response.json();
-                if (user?.role === 'STUDENT') {
+                if (user?.role === 'STUDENT' || user?.role === 'ADMIN') {
                     setFormData(prev => ({
                         ...prev,
                         name: data.name || '',
@@ -99,6 +104,8 @@ export default function ProfilePage() {
                 } else {
                     setFormData(prev => ({
                         ...prev,
+                        name: data.user?.name || data.name || '',
+                        phone: data.user?.phone || data.phone || '',
                         bio: data.bio || '',
                         hourlyRate: data.hourlyRate?.toString() || '',
                         experience: data.experience?.toString() || '',
@@ -132,14 +139,17 @@ export default function ProfilePage() {
         setLoading(true);
         
         try {
-            const endpoint = user?.role === 'STUDENT' ? '/students/profile' : '/tutors/profile';
+            let endpoint = '/students/profile';
+            if (user?.role === 'TUTOR') endpoint = '/tutors/profile';
+            if (user?.role === 'ADMIN') endpoint = '/admin/profile';
+            
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(user?.role === 'STUDENT' ? {
+                body: JSON.stringify(user?.role === 'STUDENT' || user?.role === 'ADMIN' ? {
                     name: formData.name,
                     phone: formData.phone
                 } : {
