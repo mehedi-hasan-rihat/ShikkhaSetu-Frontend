@@ -22,6 +22,14 @@ interface Tutor {
     email: string;
     image: string | null;
   };
+  availabilitySlots: {
+    id: string;
+    tutorId: string;
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+    isAvailable: boolean;
+  }[];
 }
 
 interface Category {
@@ -35,6 +43,35 @@ export default function TutorsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [booking, setBooking] = useState(false);
+
+  const handleBooking = async (tutorId: string, slotId: string) => {
+    setBooking(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tutorId,
+          slotId,
+          scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          duration: 60,
+          totalAmount: tutors.find(t => t.id === tutorId)?.hourlyRate || 0
+        })
+      });
+      if (response.ok) {
+        alert('Booking request sent successfully!');
+      } else {
+        alert('Failed to create booking');
+      }
+    } catch (error) {
+      console.error('Booking failed:', error);
+      alert('Booking failed');
+    } finally {
+      setBooking(false);
+    }
+  };
 
   useEffect(() => {
     fetchTutors();
@@ -188,8 +225,12 @@ export default function TutorsPage() {
                       >
                         View
                       </Link>
-                      <Button className="bg-white border-2 border-[#0AB5F8] text-[#0AB5F8] hover:bg-[#0AB5F8] hover:text-white px-3 py-2 text-sm">
-                        Book
+                      <Button 
+                        onClick={() => handleBooking(tutor.id, tutor.availabilitySlots[0]?.id || '')}
+                        disabled={booking || !tutor.availabilitySlots.length}
+                        className="bg-white border-2 border-[#0AB5F8] text-[#0AB5F8] hover:bg-[#0AB5F8] hover:text-white px-3 py-2 text-sm"
+                      >
+                        {booking ? 'Booking...' : 'Book'}
                       </Button>
                     </div>
                   </div>

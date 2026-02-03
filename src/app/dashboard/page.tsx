@@ -3,7 +3,7 @@
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import StudentDashboard from '@/components/dashboard/StudentDashboard';
+import StudentDashboard from './StudentDashboard';
 import TutorDashboard from '@/components/dashboard/TutorDashboard';
 import AdminDashboard from '@/components/dashboard/AdminDashboard';
 

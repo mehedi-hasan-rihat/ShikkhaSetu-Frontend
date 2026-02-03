@@ -40,6 +40,35 @@ export default function TutorDetailsPage() {
   const [tutor, setTutor] = useState<TutorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [booking, setBooking] = useState(false);
+
+  const handleSlotBooking = async (slotId: string) => {
+    setBooking(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tutorId: tutor?.id,
+          slotId: slotId,
+          scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          duration: 60,
+          totalAmount: tutor?.hourlyRate || 0
+        })
+      });
+      if (response.ok) {
+        alert('Booking request sent successfully!');
+      } else {
+        alert('Failed to create booking');
+      }
+    } catch (error) {
+      console.error('Booking failed:', error);
+      alert('Booking failed');
+    } finally {
+      setBooking(false);
+    }
+  };
 
   useEffect(() => {
     if (params.id) {
@@ -232,9 +261,11 @@ export default function TutorDetailsPage() {
                   tutor.availabilitySlots.map((slot) => (
                     <Button 
                       key={slot.id} 
+                      onClick={() => handleSlotBooking(slot.id)}
+                      disabled={booking}
                       className="bg-[#0AB5F8] hover:bg-[#0891b2] text-white px-4 py-2 text-sm font-semibold"
                     >
-                      Book {dayNames[slot.dayOfWeek]} {slot.startTime}-{slot.endTime}
+                      {booking ? 'Booking...' : `Book ${dayNames[slot.dayOfWeek]} ${slot.startTime}-${slot.endTime}`}
                     </Button>
                   ))
                 ) : (
