@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
+import { ErrorHandler } from '@/utils/errorHandler';
+
 interface Booking {
   id: string;
   student: { name: string; email: string };
@@ -39,9 +41,11 @@ export default function TutorDashboard() {
       if (response.ok) {
         const data = await response.json();
         setBookings(Array.isArray(data) ? data : []);
+      } else {
+        ErrorHandler.error('Failed to load teaching sessions');
       }
     } catch (error) {
-      console.error('Failed to fetch bookings:', error);
+      ErrorHandler.handleApiError(error, 'Load sessions');
     } finally {
       setLoading(false);
     }
@@ -54,9 +58,11 @@ export default function TutorDashboard() {
       if (response.ok) {
         const data = await response.json();
         setReviews(Array.isArray(data) ? data : []);
+      } else {
+        ErrorHandler.warning('Failed to load reviews');
       }
     } catch (error) {
-      console.error('Failed to fetch reviews:', error);
+      ErrorHandler.handleApiError(error, 'Load reviews');
     }
   };
 
@@ -79,10 +85,14 @@ export default function TutorDashboard() {
       });
       
       if (response.ok) {
+        ErrorHandler.success('Booking confirmed successfully');
         fetchBookings();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to confirm booking');
       }
     } catch (error) {
-      console.error('Failed to confirm booking:', error);
+      ErrorHandler.handleApiError(error, 'Confirm booking');
     } finally {
       setUpdating(null);
     }
@@ -97,10 +107,14 @@ export default function TutorDashboard() {
       });
       
       if (response.ok) {
+        ErrorHandler.success('Session completed successfully');
         fetchBookings();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to complete session');
       }
     } catch (error) {
-      console.error('Failed to complete booking:', error);
+      ErrorHandler.handleApiError(error, 'Complete session');
     } finally {
       setUpdating(null);
     }

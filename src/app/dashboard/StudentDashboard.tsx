@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
 import ReviewModal from '@/components/ReviewModal';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface Booking {
   id: string;
@@ -51,9 +52,11 @@ export default function StudentDashboard() {
       if (response.ok) {
         const data = await response.json();
         setBookings(Array.isArray(data) ? data : []);
+      } else {
+        ErrorHandler.error('Failed to load bookings');
       }
     } catch (error) {
-      console.error('Failed to fetch bookings:', error);
+      ErrorHandler.handleApiError(error, 'Load bookings');
     } finally {
       setLoading(false);
     }
@@ -78,10 +81,14 @@ export default function StudentDashboard() {
       });
       
       if (response.ok) {
+        ErrorHandler.success('Booking cancelled successfully');
         fetchBookings();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to cancel booking');
       }
     } catch (error) {
-      console.error('Failed to cancel booking:', error);
+      ErrorHandler.handleApiError(error, 'Cancel booking');
     } finally {
       setUpdating(null);
     }

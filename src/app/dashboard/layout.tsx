@@ -4,6 +4,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ToastContainer } from '@/utils/errorHandler';
 
 const tutorNavItems = [
     { href: '/dashboard', label: 'Overview', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z' },
@@ -102,6 +103,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {children}
                 </main>
             </div>
+            <ToastContainer />
         </div>
     );
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface User {
   id: string;
@@ -49,11 +50,25 @@ export default function AdminDashboard() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, { credentials: 'include' })
       ]);
 
-      if (usersRes.ok) setUsers(await usersRes.json());
-      if (bookingsRes.ok) setBookings(await bookingsRes.json());
-      if (categoriesRes.ok) setCategories(await categoriesRes.json());
+      if (usersRes.ok) {
+        setUsers(await usersRes.json());
+      } else {
+        ErrorHandler.error('Failed to load users');
+      }
+      
+      if (bookingsRes.ok) {
+        setBookings(await bookingsRes.json());
+      } else {
+        ErrorHandler.error('Failed to load bookings');
+      }
+      
+      if (categoriesRes.ok) {
+        setCategories(await categoriesRes.json());
+      } else {
+        ErrorHandler.error('Failed to load categories');
+      }
     } catch (error) {
-      console.error('Failed to fetch admin data:', error);
+      ErrorHandler.handleApiError(error, 'Load admin data');
     } finally {
       setLoading(false);
     }
@@ -71,9 +86,13 @@ export default function AdminDashboard() {
       
       if (response.ok) {
         setUsers(users.map(u => u.id === userId ? { ...u, status: newStatus as 'ACTIVE' | 'BANNED' } : u));
+        ErrorHandler.success(`User ${newStatus.toLowerCase()} successfully`);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to update user status');
       }
     } catch (error) {
-      console.error('Failed to update user status:', error);
+      ErrorHandler.handleApiError(error, 'Update user status');
     }
   };
 
@@ -86,9 +105,13 @@ export default function AdminDashboard() {
       
       if (response.ok) {
         setCategories(categories.filter(c => c.id !== categoryId));
+        ErrorHandler.success('Category deleted successfully');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to delete category');
       }
     } catch (error) {
-      console.error('Failed to delete category:', error);
+      ErrorHandler.handleApiError(error, 'Delete category');
     }
   };
 
@@ -106,9 +129,13 @@ export default function AdminDashboard() {
         setCategories([...categories, category]);
         setNewCategory({ name: '', description: '' });
         setShowCreateForm(false);
+        ErrorHandler.success('Category created successfully');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to create category');
       }
     } catch (error) {
-      console.error('Failed to create category:', error);
+      ErrorHandler.handleApiError(error, 'Create category');
     }
   };
 
