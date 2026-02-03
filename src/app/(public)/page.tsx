@@ -44,7 +44,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white space-y-20">
       <Hero />
-      <AcademicTutors />
+      {/* <AcademicTutors /> */}
       <ProTutors />
       {/* <RecentTuitionOffers /> */}
       <JoinSection />
