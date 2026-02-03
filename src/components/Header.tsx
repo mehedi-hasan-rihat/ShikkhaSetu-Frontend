@@ -2,11 +2,17 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/providers/AuthProvider';
+import { useRouter, usePathname } from 'next/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user, isLoading, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -43,34 +49,84 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/tutors" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-all duration-200 hover:scale-105">
+            <Link href="/tutors" className={`font-medium transition-all duration-200 hover:scale-105 ${
+              pathname === '/tutors' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+            }`}>
               Find Tutors
             </Link>
-            <Link href="/request-tutor" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-all duration-200 hover:scale-105">
-              Request a Tutor
+            <Link href="/about-us" className={`font-medium transition-all duration-200 hover:scale-105 ${
+              pathname === '/about-us' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+            }`}>
+              About Us
             </Link>
-            <Link href="/subscription" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-all duration-200 hover:scale-105">
-              Subscription Plan
+            <Link href="/contact" className={`font-medium transition-all duration-200 hover:scale-105 ${
+              pathname === '/contact' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+            }`}>
+              Contact
             </Link>
-            <Link href="/tuitions" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-all duration-200 hover:scale-105">
-              Available Tuitions
+            <Link href="/how-it-works" className={`font-medium transition-all duration-200 hover:scale-105 ${
+              pathname === '/how-it-works' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+            }`}>
+              How It Works
             </Link>
           </div>
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons / User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              href="/login" 
-              className="text-gray-700 hover:text-[#0AB5F8] border-2 border-gray-300 hover:border-[#0AB5F8] px-4 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105"
-            >
-              Log in
-            </Link>
-            <Link 
-              href="/register" 
-              className="bg-[#0AB5F8] hover:bg-[#0891b2] text-white px-6 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              Get Started
-            </Link>
+            {isLoading ? (
+              <div className="w-8 h-8 border-2 border-[#0AB5F8] border-t-transparent rounded-full animate-spin"></div>
+            ) : isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 text-gray-700 hover:text-[#0AB5F8] transition-colors"
+                >
+                  <div className="w-8 h-8 bg-[#0AB5F8] text-white rounded-full flex items-center justify-center font-medium">
+                    {user?.name?.charAt(0)?.toUpperCase()}
+                  </div>
+                  <span className="font-medium">{user?.name}</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#0AB5F8]"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        await logout();
+                        setIsUserMenuOpen(false);
+                        router.push('/');
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  className="text-gray-700 hover:text-[#0AB5F8] border-2 border-gray-300 hover:border-[#0AB5F8] px-4 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105"
+                >
+                  Log in
+                </Link>
+                <Link 
+                  href="/register" 
+                  className="bg-[#0AB5F8] hover:bg-[#0891b2] text-white px-6 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -88,17 +144,25 @@ export function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200 animate-fadeIn">
             <div className="flex flex-col space-y-4">
-              <Link href="/tutors" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-colors">
+              <Link href="/tutors" className={`font-medium transition-colors ${
+                pathname === '/tutors' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+              }`}>
                 Find Tutors
               </Link>
-              <Link href="/request-tutor" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-colors">
-                Request a Tutor
+              <Link href="/about-us" className={`font-medium transition-colors ${
+                pathname === '/about-us' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+              }`}>
+                About Us
               </Link>
-              <Link href="/subscription" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-colors">
-                Subscription Plan
+              <Link href="/contact" className={`font-medium transition-colors ${
+                pathname === '/contact' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+              }`}>
+                Contact
               </Link>
-              <Link href="/tuitions" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-colors">
-                Available Tuitions
+              <Link href="/how-it-works" className={`font-medium transition-colors ${
+                pathname === '/how-it-works' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+              }`}>
+                How It Works
               </Link>
               <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
                 <Link href="/login" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-colors">
