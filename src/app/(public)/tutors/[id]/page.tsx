@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface TutorProfile {
   id: string;
@@ -58,13 +59,13 @@ export default function TutorDetailsPage() {
         })
       });
       if (response.ok) {
-        alert('Booking request sent successfully!');
+        ErrorHandler.success('Booking request sent successfully!');
       } else {
-        alert('Failed to create booking');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to create booking');
       }
     } catch (error) {
-      console.error('Booking failed:', error);
-      alert('Booking failed');
+      ErrorHandler.handleApiError(error, 'Create booking');
     } finally {
       setBooking(false);
     }
@@ -194,7 +195,7 @@ export default function TutorDetailsPage() {
         <div className="bg-white rounded-2xl border-2 border-[#0AB5F8] p-6 mb-8 shadow-lg">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Avatar */}
-            <div className="flex-shrink-0 mx-auto lg:mx-0">
+            <div className="shrink-0 mx-auto lg:mx-0">
               <div className="w-32 h-32 bg-[#0AB5F8]/10 rounded-full flex items-center justify-center ring-2 ring-[#0AB5F8]">
                 {tutor.user.image ? (
                   <img
