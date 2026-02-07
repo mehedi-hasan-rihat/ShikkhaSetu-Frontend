@@ -18,14 +18,7 @@ export default function TutorFields({ formData, onChange }: TutorFieldsProps) {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                // Check localStorage first
-                const cachedCategories = localStorage.getItem('categories');
-                console.log('Cached Categories:', cachedCategories);
-                if (cachedCategories) {
-                    setCategories(JSON.parse(cachedCategories));
-                    return;
-                }
-
+s
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`);
                 const data = await response.json();
                 console.log('Fetched Categories:', data);
@@ -33,8 +26,6 @@ export default function TutorFields({ formData, onChange }: TutorFieldsProps) {
                 // Ensure data is an array
                 const categoriesArray = Array.isArray(data) ? data : [];
                 
-                // Store in localStorage
-                localStorage.setItem('categories', JSON.stringify(categoriesArray));
                 setCategories(categoriesArray);
             } catch (error) {
                 console.error('Failed to fetch categories:', error);
@@ -124,14 +115,14 @@ export default function TutorFields({ formData, onChange }: TutorFieldsProps) {
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0AB5F8] focus:border-transparent"
                     >
-                        <option value="">Day count</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
+                        <option value="">Select Day</option>
+                        <option value="1">Saturday</option>
+                        <option value="2">Sunday</option>
+                        <option value="3">Monday</option>
+                        <option value="4">Tuesday</option>
+                        <option value="5">Wednesday</option>
+                        <option value="6">Thursday</option>
+                        <option value="7">Friday</option>
                     </select>
                 </div>
                 <Input
