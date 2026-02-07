@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
 import { ErrorHandler } from '@/utils/errorHandler';
+import { Booking } from '@/types';
 
 interface Booking {
   id: string;
@@ -160,7 +161,7 @@ export default function TutorDashboard() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between pt-3">
               <div>
-                <p className="text-purple-100 text-sm"></p>
+                <p className="text-purple-100 text-sm">Total Bookings</p>
                 <p className="text-2xl font-bold">{bookings.length}</p>
               </div>
             </div>

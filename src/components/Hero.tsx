@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 export function Hero() {
@@ -80,18 +81,18 @@ export function Hero() {
                             </div>
 
                             <div className="mt-10 flex w-full items-center space-x-4">
-                                <a
+                                <Link
                                     className="flex-1 rounded-lg bg-[#0AB5F8] py-4 text-center text-[17px] font-bold text-white transition-all duration-300 hover:bg-[#0891b2] hover:scale-105 md:text-xl"
                                     href="/tutors"
                                 >
                                     Find Tutors
-                                </a>
-                                <a
-                                    className="flex-1 rounded-lg border-2 border-[#0AB5F8] bg-white py-4 text-center text-[17px] font-bold text-[#0AB5F8] md:text-xl transition-all duration-300 hover:bg-[#0AB5F8] hover:text-white hover:scale-105"
+                                </Link>
+                                <Link
+                                    className="hidden flex-1 rounded-lg border-2 border-[#0AB5F8] bg-white py-4 text-center text-[17px] font-bold text-[#0AB5F8] md:text-xl transition-all duration-300 hover:bg-[#0AB5F8] hover:text-white hover:scale-105"
                                     href="/register"
                                 >
                                     Request For Tutor
-                                </a>
+                                </Link>
                             </div>
                         </div>
 
