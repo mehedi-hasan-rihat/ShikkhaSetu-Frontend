@@ -55,6 +55,10 @@ export default function ProfilePage() {
             if (user.role === 'TUTOR') {
                 fetchProfile();
                 fetchCategories();
+            } else if (user.role === 'STUDENT') {
+                fetchProfile();
+            } else if (user.role === 'ADMIN') {
+                fetchProfile();
             } else {
                 setFetchLoading(false);
             }
@@ -77,7 +81,11 @@ export default function ProfilePage() {
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/profile`, {
+            let endpoint = '/students/profile';
+            if (user?.role === 'TUTOR') endpoint = '/tutors/profile';
+            if (user?.role === 'ADMIN') endpoint = '/admin/profile';
+            
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -86,16 +94,26 @@ export default function ProfilePage() {
             });
             
             if (response.ok) {
-                const data: TutorProfile = await response.json();
-                setFormData(prev => ({
-                    ...prev,
-                    bio: data.bio || '',
-                    hourlyRate: data.hourlyRate?.toString() || '',
-                    experience: data.experience?.toString() || '',
-                    subjects: Array.isArray(data.subjects) ? data.subjects.join(', ') : '',
-                    categoryId: data.categoryId || '',
-                    isAvailable: data.isAvailable ?? true
-                }));
+                const data = await response.json();
+                if (user?.role === 'STUDENT' || user?.role === 'ADMIN') {
+                    setFormData(prev => ({
+                        ...prev,
+                        name: data.name || '',
+                        phone: data.phone || ''
+                    }));
+                } else {
+                    setFormData(prev => ({
+                        ...prev,
+                        name: data.user?.name || data.name || '',
+                        phone: data.user?.phone || data.phone || '',
+                        bio: data.bio || '',
+                        hourlyRate: data.hourlyRate?.toString() || '',
+                        experience: data.experience?.toString() || '',
+                        subjects: Array.isArray(data.subjects) ? data.subjects.join(', ') : '',
+                        categoryId: data.categoryId || '',
+                        isAvailable: data.isAvailable ?? true
+                    }));
+                }
             }
         } catch (error) {
             console.error('Failed to fetch profile:', error);
@@ -121,13 +139,20 @@ export default function ProfilePage() {
         setLoading(true);
         
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/profile`, {
+            let endpoint = '/students/profile';
+            if (user?.role === 'TUTOR') endpoint = '/tutors/profile';
+            if (user?.role === 'ADMIN') endpoint = '/admin/profile';
+            
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
+                body: JSON.stringify(user?.role === 'STUDENT' || user?.role === 'ADMIN' ? {
+                    name: formData.name,
+                    phone: formData.phone
+                } : {
                     ...formData,
                     hourlyRate: parseFloat(formData.hourlyRate),
                     experience: parseInt(formData.experience),

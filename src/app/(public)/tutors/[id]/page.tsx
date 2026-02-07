@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface TutorProfile {
   id: string;
@@ -40,6 +41,35 @@ export default function TutorDetailsPage() {
   const [tutor, setTutor] = useState<TutorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [booking, setBooking] = useState(false);
+
+  const handleSlotBooking = async (slotId: string) => {
+    setBooking(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tutorId: tutor?.id,
+          slotId: slotId,
+          scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          duration: 60,
+          totalAmount: tutor?.hourlyRate || 0
+        })
+      });
+      if (response.ok) {
+        ErrorHandler.success('Booking request sent successfully!');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to create booking');
+      }
+    } catch (error) {
+      ErrorHandler.handleApiError(error, 'Create booking');
+    } finally {
+      setBooking(false);
+    }
+  };
 
   useEffect(() => {
     if (params.id) {
@@ -165,7 +195,7 @@ export default function TutorDetailsPage() {
         <div className="bg-white rounded-2xl border-2 border-[#0AB5F8] p-6 mb-8 shadow-lg">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Avatar */}
-            <div className="flex-shrink-0 mx-auto lg:mx-0">
+            <div className="shrink-0 mx-auto lg:mx-0">
               <div className="w-32 h-32 bg-[#0AB5F8]/10 rounded-full flex items-center justify-center ring-2 ring-[#0AB5F8]">
                 {tutor.user.image ? (
                   <img
@@ -232,9 +262,11 @@ export default function TutorDetailsPage() {
                   tutor.availabilitySlots.map((slot) => (
                     <Button 
                       key={slot.id} 
+                      onClick={() => handleSlotBooking(slot.id)}
+                      disabled={booking}
                       className="bg-[#0AB5F8] hover:bg-[#0891b2] text-white px-4 py-2 text-sm font-semibold"
                     >
-                      Book {dayNames[slot.dayOfWeek]} {slot.startTime}-{slot.endTime}
+                      {booking ? 'Booking...' : `Book ${dayNames[slot.dayOfWeek]} ${slot.startTime}-${slot.endTime}`}
                     </Button>
                   ))
                 ) : (

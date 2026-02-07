@@ -116,6 +116,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface FilterOptions {
+  searchTerm?: string;
   subjects?: string[];
   categories?: string[];
   minRating?: number;
@@ -125,4 +126,5 @@ export interface FilterOptions {
   sortBy?: 'rating' | 'price' | 'experience';
   sortOrder?: 'asc' | 'desc';
   limit?: number;
+  page?: number;
 }

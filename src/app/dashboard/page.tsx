@@ -3,9 +3,9 @@
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import StudentDashboard from '@/components/dashboard/StudentDashboard';
-import TutorDashboard from '@/components/dashboard/TutorDashboard';
-import AdminDashboard from '@/components/dashboard/AdminDashboard';
+import StudentDashboard from './StudentDashboard';
+import TutorDashboard from './TutorDashboard';
+import AdminDashboard from './AdminDashboard';
 
 export default function DashboardPage() {
     const { user, isLoading, isAuthenticated } = useAuth();

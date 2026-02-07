@@ -6,179 +6,171 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useRouter, usePathname } from 'next/navigation';
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { user, isLoading, isAuthenticated, logout } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const { user, isLoading, isAuthenticated, logout } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
 
-  useEffect(() => {
-    const controlNavbar = () => {
-      if (typeof window !== 'undefined') {
-        if (window.scrollY > lastScrollY && window.scrollY > 100) {
-          setIsVisible(false);
-        } else {
-          setIsVisible(true);
+    useEffect(() => {
+        const controlNavbar = () => {
+            if (typeof window !== 'undefined') {
+                if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                    setIsVisible(false);
+                } else {
+                    setIsVisible(true);
+                }
+                setLastScrollY(window.scrollY);
+            }
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('scroll', controlNavbar);
+            return () => {
+                window.removeEventListener('scroll', controlNavbar);
+            };
         }
-        setLastScrollY(window.scrollY);
-      }
-    };
+    }, [lastScrollY]);
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', controlNavbar);
-      return () => {
-        window.removeEventListener('scroll', controlNavbar);
-      };
-    }
-  }, [lastScrollY]);
+    return (
+        <nav className={`fixed top-4 left-4 right-4 z-50 bg-white/80 backdrop-blur-md shadow-lg border border-gray-200 rounded-xl max-w-6xl mx-auto transition-all duration-300 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
+            <div className="px-4 sm:px-6 lg:px-8 py-2">
+                <div className="flex items-center justify-between h-16">
+                    {/* Logo */}
+                    <div className="flex items-center">
+                        <Link href="/" className="flex items-center group">
+                            <svg className="w-12 h-12 text-[#0AB5F8] group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V15h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" />
+                            </svg>
+                        </Link>
+                    </div>
 
-  return (
-    <nav className={`fixed top-4 left-4 right-4 z-50 bg-white/80 backdrop-blur-md shadow-lg border border-gray-200 rounded-xl max-w-6xl mx-auto transition-all duration-300 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
-      <div className="px-4 sm:px-6 lg:px-8 py-2">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center group">
-              <svg className="w-12 h-12 text-[#0AB5F8] group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V15h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
-              </svg>
-            </Link>
-          </div>
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center space-x-8">
+                        <Link href="/tutors" className={`font-medium transition-all duration-200 hover:scale-105 ${pathname === '/tutors' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                            }`}>
+                            Find Tutors
+                        </Link>
+                        <Link href="/about-us" className={`font-medium transition-all duration-200 hover:scale-105 ${pathname === '/about-us' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                            }`}>
+                            About Us
+                        </Link>
+                        {/* <Link href="/contact" className={`font-medium transition-all duration-200 hover:scale-105 ${pathname === '/contact' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                            }`}>
+                            Contact
+                        </Link> */}
+                        <Link href="/how-it-works" className={`font-medium transition-all duration-200 hover:scale-105 ${pathname === '/how-it-works' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                            }`}>
+                            How It Works
+                        </Link>
+                    </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/tutors" className={`font-medium transition-all duration-200 hover:scale-105 ${
-              pathname === '/tutors' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-            }`}>
-              Find Tutors
-            </Link>
-            <Link href="/about-us" className={`font-medium transition-all duration-200 hover:scale-105 ${
-              pathname === '/about-us' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-            }`}>
-              About Us
-            </Link>
-            <Link href="/contact" className={`font-medium transition-all duration-200 hover:scale-105 ${
-              pathname === '/contact' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-            }`}>
-              Contact
-            </Link>
-            <Link href="/how-it-works" className={`font-medium transition-all duration-200 hover:scale-105 ${
-              pathname === '/how-it-works' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-            }`}>
-              How It Works
-            </Link>
-          </div>
+                    {/* Auth Buttons / User Menu */}
+                    <div className="hidden md:flex items-center space-x-4">
+                        {isLoading ? (
+                            <div className="w-8 h-8 border-2 border-[#0AB5F8] border-t-transparent rounded-full animate-spin"></div>
+                        ) : isAuthenticated ? (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                    className="flex items-center space-x-2 text-gray-700 hover:text-[#0AB5F8] transition-colors"
+                                >
+                                    <div className="w-8 h-8 bg-[#0AB5F8] text-white rounded-full flex items-center justify-center font-medium">
+                                        {user?.name?.charAt(0)?.toUpperCase()}
+                                    </div>
+                                    <span className="font-medium">{user?.name}</span>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                {isUserMenuOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                                        <Link
+                                            href="/dashboard"
+                                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#0AB5F8]"
+                                            onClick={() => setIsUserMenuOpen(false)}
+                                        >
+                                            Dashboard
+                                        </Link>
+                                        <button
+                                            onClick={async () => {
+                                                await logout();
+                                                setIsUserMenuOpen(false);
+                                                router.push('/');
+                                            }}
+                                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="text-gray-700 hover:text-[#0AB5F8] border-2 border-gray-300 hover:border-[#0AB5F8] px-4 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105"
+                                >
+                                    Log in
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="bg-[#0AB5F8] hover:bg-[#0891b2] text-white px-6 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
+                                >
+                                    Get Started
+                                </Link>
+                            </>
+                        )}
+                    </div>
 
-          {/* Auth Buttons / User Menu */}
-          <div className="hidden md:flex items-center space-x-4">
-            {isLoading ? (
-              <div className="w-8 h-8 border-2 border-[#0AB5F8] border-t-transparent rounded-full animate-spin"></div>
-            ) : isAuthenticated ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-[#0AB5F8] transition-colors"
-                >
-                  <div className="w-8 h-8 bg-[#0AB5F8] text-white rounded-full flex items-center justify-center font-medium">
-                    {user?.name?.charAt(0)?.toUpperCase()}
-                  </div>
-                  <span className="font-medium">{user?.name}</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                    <Link
-                      href="/dashboard"
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#0AB5F8]"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Dashboard
-                    </Link>
+                    {/* Mobile menu button */}
                     <button
-                      onClick={async () => {
-                        await logout();
-                        setIsUserMenuOpen(false);
-                        router.push('/');
-                      }}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="md:hidden p-2 rounded-full text-gray-700 hover:text-[#0AB5F8] hover:bg-gray-100 transition-all duration-200"
                     >
-                      Logout
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
                     </button>
-                  </div>
+                </div>
+
+                {/* Mobile Navigation */}
+                {isMenuOpen && (
+                    <div className="md:hidden py-4 border-t border-gray-200 animate-fadeIn">
+                        <div className="flex flex-col space-y-4">
+                            <Link href="/tutors" className={`font-medium transition-colors ${pathname === '/tutors' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                                }`}>
+                                Find Tutors
+                            </Link>
+                            <Link href="/about-us" className={`font-medium transition-colors ${pathname === '/about-us' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                                }`}>
+                                About Us
+                            </Link>
+                            <Link href="/contact" className={`font-medium transition-colors ${pathname === '/contact' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                                }`}>
+                                Contact
+                            </Link>
+                            <Link href="/how-it-works" className={`font-medium transition-colors ${pathname === '/how-it-works' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
+                                }`}>
+                                How It Works
+                            </Link>
+                            <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                                <Link href="/login" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-colors">
+                                    Log in
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="bg-[#0AB5F8] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#0891b2] transition-colors text-center"
+                                >
+                                    Get Started
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 )}
-              </div>
-            ) : (
-              <>
-                <Link 
-                  href="/login" 
-                  className="text-gray-700 hover:text-[#0AB5F8] border-2 border-gray-300 hover:border-[#0AB5F8] px-4 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105"
-                >
-                  Log in
-                </Link>
-                <Link 
-                  href="/register" 
-                  className="bg-[#0AB5F8] hover:bg-[#0891b2] text-white px-6 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-full text-gray-700 hover:text-[#0AB5F8] hover:bg-gray-100 transition-all duration-200"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 animate-fadeIn">
-            <div className="flex flex-col space-y-4">
-              <Link href="/tutors" className={`font-medium transition-colors ${
-                pathname === '/tutors' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-              }`}>
-                Find Tutors
-              </Link>
-              <Link href="/about-us" className={`font-medium transition-colors ${
-                pathname === '/about-us' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-              }`}>
-                About Us
-              </Link>
-              <Link href="/contact" className={`font-medium transition-colors ${
-                pathname === '/contact' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-              }`}>
-                Contact
-              </Link>
-              <Link href="/how-it-works" className={`font-medium transition-colors ${
-                pathname === '/how-it-works' ? 'text-[#0AB5F8]' : 'text-gray-700 hover:text-[#0AB5F8]'
-              }`}>
-                How It Works
-              </Link>
-              <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
-                <Link href="/login" className="text-gray-700 hover:text-[#0AB5F8] font-medium transition-colors">
-                  Log in
-                </Link>
-                <Link 
-                  href="/register" 
-                  className="bg-[#0AB5F8] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#0891b2] transition-colors text-center"
-                >
-                  Get Started
-                </Link>
-              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </nav>
-  );
+        </nav>
+    );
 }
