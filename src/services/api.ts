@@ -9,8 +9,6 @@ class ApiService {
       headers: { 'Content-Type': 'application/json' },
     });
     const data = await response.json();
-
-    console.log('API Response:', data); // Debugging log
     
     if (!data.tutors || !Array.isArray(data.tutors)) {
       return { success: false, error: 'Invalid response format', data: { data: [], pagination: { page: 1, limit: 12, total: 0, totalPages: 0 } } };
