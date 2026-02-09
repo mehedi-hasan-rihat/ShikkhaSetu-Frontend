@@ -15,8 +15,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const session = authClient.useSession();
 
-    console.log('AuthProvider session:', session);
-
     const logout = async () => {
         await authClient.signOut();
     };
