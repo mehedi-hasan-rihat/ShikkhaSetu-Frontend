@@ -5,11 +5,9 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
-
 import { ErrorHandler } from '@/utils/errorHandler';
-import { Booking } from '@/types';
 
-interface Booking {
+interface TutorBooking {
   id: string;
   student: { name: string; email: string };
   scheduledAt: string;
@@ -24,7 +22,7 @@ interface Booking {
 
 export default function TutorDashboard() {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<TutorBooking[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);

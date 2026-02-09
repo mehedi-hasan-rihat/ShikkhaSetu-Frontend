@@ -18,7 +18,6 @@ export default function TutorFields({ formData, onChange }: TutorFieldsProps) {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-s
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`);
                 const data = await response.json();
                 console.log('Fetched Categories:', data);
