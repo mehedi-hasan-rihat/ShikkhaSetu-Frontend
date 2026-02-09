@@ -46,7 +46,7 @@ export function ProTutors() {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors`);
             if (response.ok) {
                 const data = await response.json();
-                setTutors(data.slice(0, 4));
+                setTutors(data.tutors?.slice(0, 4) || []);
             }
         } catch (error) {
             console.error('Failed to fetch tutors:', error);
