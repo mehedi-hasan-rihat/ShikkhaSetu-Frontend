@@ -3,6 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // Skip middleware for verify-email route
+  if (pathname.startsWith("/verify-email")) {
+    return NextResponse.next();
+  }
+
   // Check for session token in cookies
   const sessionToken = request.cookies.get("better-auth.session_token");
 
