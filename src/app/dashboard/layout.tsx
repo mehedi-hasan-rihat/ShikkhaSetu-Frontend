@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ToastContainer } from '@/utils/errorHandler';
 
+export const dynamic = 'force-dynamic';
+
 const tutorNavItems = [
     { href: '/dashboard', label: 'Overview', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z' },
     { href: '/dashboard/availability', label: 'Availability', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
@@ -25,14 +27,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-        console.log('DashboardLayout - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated); // Debugging log
-
     useEffect(() => {
+        console.log('Dashboard - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'user:', user);
         if (!isLoading && !isAuthenticated) {
-            console.log('Redirecting to login...'); // Debugging log
+            console.log('Redirecting to login...');
             router.push('/login');
         }
-    }, [isLoading, isAuthenticated, router]);
+    }, [isLoading, isAuthenticated, router, user]);
 
     if (isLoading) {
         return (
