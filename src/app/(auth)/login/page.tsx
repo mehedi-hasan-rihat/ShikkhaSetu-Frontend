@@ -28,13 +28,26 @@ export default function LoginPage() {
             });
 
             if (data) {
-                // Get session token from cookie
-                const cookies = document.cookie.split(';');
-                const sessionCookie = cookies.find(c => c.trim().startsWith('better-auth.session_token='));
-                const token = sessionCookie?.split('=')[1];
+                console.log('Login - Response data:', data);
+                
+                // Try to get token from response first
+                const token = data.token || (data as any).session?.token;
                 
                 if (token) {
                     localStorage.setItem('auth_token', token);
+                    console.log('Login - Token saved to localStorage:', token.substring(0, 10) + '...');
+                } else {
+                    // Fallback: try to get from cookie
+                    const cookies = document.cookie.split(';');
+                    const sessionCookie = cookies.find(c => c.trim().startsWith('better-auth.session_token='));
+                    const cookieToken = sessionCookie?.split('=')[1];
+                    
+                    if (cookieToken) {
+                        localStorage.setItem('auth_token', cookieToken);
+                        console.log('Login - Token from cookie saved:', cookieToken.substring(0, 10) + '...');
+                    } else {
+                        console.warn('Login - No token found in response or cookie');
+                    }
                 }
                 router.push('/dashboard');
             } else {
