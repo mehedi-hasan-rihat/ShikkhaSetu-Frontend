@@ -5,6 +5,8 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface Booking {
     id: string;
@@ -52,13 +54,7 @@ export default function TutorDashboard() {
 
     const fetchBookings = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetchWithAuth('/bookings');
             
             if (response.ok) {
                 const data = await response.json();
@@ -67,27 +63,21 @@ export default function TutorDashboard() {
                 setBookings([]);
             }
         } catch (error) {
-            console.error('Failed to fetch bookings:', error);
+            ErrorHandler.handleApiError(error, 'Load bookings');
             setBookings([]);
         }
     };
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/profile`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetchWithAuth('/tutors/profile');
             
             if (response.ok) {
                 const data = await response.json();
                 setProfile(data);
             }
         } catch (error) {
-            console.error('Failed to fetch profile:', error);
+            ErrorHandler.handleApiError(error, 'Load profile');
         } finally {
             setLoading(false);
         }
@@ -95,20 +85,17 @@ export default function TutorDashboard() {
 
     const markComplete = async (bookingId: string) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingId}`, {
+            const response = await fetchWithAuth(`/bookings/${bookingId}`, {
                 method: 'PATCH',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify({ status: 'COMPLETED' })
             });
             
             if (response.ok) {
                 fetchBookings();
+                ErrorHandler.success('Booking marked as complete');
             }
         } catch (error) {
-            console.error('Failed to mark complete:', error);
+            ErrorHandler.handleApiError(error, 'Mark complete');
         }
     };
 

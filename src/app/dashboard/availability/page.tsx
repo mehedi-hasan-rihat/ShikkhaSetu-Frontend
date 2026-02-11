@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface AvailabilitySlot {
   id: string;
@@ -32,15 +34,13 @@ export default function AvailabilityPage() {
 
   const fetchAvailability = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/availability`, {
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth('/tutors/availability');
       if (response.ok) {
         const data = await response.json();
         setSlots(data);
       }
     } catch (error) {
-      console.error('Failed to fetch availability:', error);
+      ErrorHandler.handleApiError(error, 'Load availability');
     } finally {
       setLoading(false);
     }
@@ -54,19 +54,18 @@ export default function AvailabilityPage() {
         startTime: newSlot.startTime,
         endTime: newSlot.endTime
       };
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/availability`, {
+      const response = await fetchWithAuth('/tutors/availability', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(slotData)
       });
       if (response.ok) {
         const newSlotData = await response.json();
         setSlots(prev => [...prev, newSlotData]);
         setNewSlot({ dayOfWeek: 0, startTime: '09:00', endTime: '17:00' });
+        ErrorHandler.success('Slot added successfully');
       }
     } catch (error) {
-      console.error('Failed to add slot:', error);
+      ErrorHandler.handleApiError(error, 'Add slot');
     } finally {
       setSaving(false);
     }
@@ -81,10 +80,8 @@ export default function AvailabilityPage() {
           : { dayOfWeek: dayNames[s.dayOfWeek], startTime: s.startTime, endTime: s.endTime }
       );
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/availability`, {
+      const response = await fetchWithAuth('/tutors/availability', {
         method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ availabilitySlots })
       });
       if (response.ok) {
@@ -93,9 +90,10 @@ export default function AvailabilityPage() {
         );
         setSlots(updatedSlots);
         setEditingSlot(null);
+        ErrorHandler.success('Slot updated successfully');
       }
     } catch (error) {
-      console.error('Failed to update slot:', error);
+      ErrorHandler.handleApiError(error, 'Update slot');
     } finally {
       setSaving(false);
     }
@@ -103,15 +101,13 @@ export default function AvailabilityPage() {
 
   const deleteSlot = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/availability/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth(`/tutors/availability/${id}`, { method: 'DELETE' });
       if (response.ok) {
         fetchAvailability();
+        ErrorHandler.success('Slot deleted successfully');
       }
     } catch (error) {
-      console.error('Failed to delete slot:', error);
+      ErrorHandler.handleApiError(error, 'Delete slot');
     }
   };
 

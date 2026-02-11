@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/AuthProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface Booking {
     id: string;
@@ -35,13 +37,7 @@ export default function BookingsPage() {
 
     const fetchBookings = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetchWithAuth('/bookings');
             
             if (response.ok) {
                 const data = await response.json();
@@ -50,7 +46,7 @@ export default function BookingsPage() {
                 setBookings([]);
             }
         } catch (error) {
-            console.error('Failed to fetch bookings:', error);
+            ErrorHandler.handleApiError(error, 'Load bookings');
             setBookings([]);
         } finally {
             setLoading(false);

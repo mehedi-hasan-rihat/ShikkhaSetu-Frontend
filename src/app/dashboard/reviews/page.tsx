@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/AuthProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ErrorHandler } from '@/utils/errorHandler';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface Review {
   id: string;
@@ -36,9 +37,7 @@ export default function ReviewsPage() {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/tutor/${user?.id}`, {
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth(`/reviews/tutor/${user?.id}`);
       if (response.ok) {
         const data = await response.json();
         setReviews(Array.isArray(data) ? data : []);

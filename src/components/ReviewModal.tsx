@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface ReviewModalProps {
   bookingId: string;
@@ -20,10 +22,8 @@ export default function ReviewModal({ bookingId, tutorName, isOpen, onClose, onS
   const submitReview = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews`, {
+      const response = await fetchWithAuth('/reviews', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           bookingId,
           rating,
@@ -32,13 +32,16 @@ export default function ReviewModal({ bookingId, tutorName, isOpen, onClose, onS
       });
       
       if (response.ok) {
+        ErrorHandler.success('Review submitted successfully');
         onSubmit();
         onClose();
         setRating(0);
         setComment('');
+      } else {
+        ErrorHandler.error('Failed to submit review');
       }
     } catch (error) {
-      console.error('Failed to submit review:', error);
+      ErrorHandler.handleApiError(error, 'Submit review');
     } finally {
       setLoading(false);
     }
