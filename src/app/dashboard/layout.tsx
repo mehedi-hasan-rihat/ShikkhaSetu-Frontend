@@ -25,8 +25,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    useEffect(() => {
         console.log('DashboardLayout - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated); // Debugging log
+
+    useEffect(() => {
         if (!isLoading && !isAuthenticated) {
             console.log('Redirecting to login...'); // Debugging log
             router.push('/login');
