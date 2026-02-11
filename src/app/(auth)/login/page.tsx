@@ -28,12 +28,21 @@ export default function LoginPage() {
             });
 
             if (data) {
+                // Get session token from cookie
+                const cookies = document.cookie.split(';');
+                const sessionCookie = cookies.find(c => c.trim().startsWith('better-auth.session_token='));
+                const token = sessionCookie?.split('=')[1];
+                
+                if (token) {
+                    localStorage.setItem('auth_token', token);
+                }
                 router.push('/dashboard');
             } else {
                 setError(error?.message || 'Login failed. Please try again.');
             }
-        } catch (err) {
-            setError('An error occurred. Please try again.');
+        } catch (err: any) {
+            console.error('Login error:', err);
+            setError(err?.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }

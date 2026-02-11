@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { ErrorHandler } from '@/utils/errorHandler';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface Tutor {
     id: string;
@@ -66,10 +67,8 @@ export default function TutorsPage() {
     const handleBooking = async (tutorId: string, slotId: string) => {
         setBooking(tutorId);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
+            const response = await fetchWithAuth('/bookings', {
                 method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     tutorId,
                     slotId,
@@ -79,6 +78,7 @@ export default function TutorsPage() {
                 })
             });
             if (response.ok) {
+                console.log('Booking created successfully');
                 ErrorHandler.success('Booking request sent successfully!');
             } else {
                 const errorData = await response.json().catch(() => ({}));

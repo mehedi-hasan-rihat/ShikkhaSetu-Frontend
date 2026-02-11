@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { ErrorHandler } from '@/utils/errorHandler';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface TutorBooking {
   id: string;
@@ -34,9 +35,7 @@ export default function TutorDashboard() {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/bookings`, {
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth('/tutors/bookings');
       if (response.ok) {
         const data = await response.json();
         setBookings(Array.isArray(data) ? data : []);
@@ -53,7 +52,7 @@ export default function TutorDashboard() {
   const fetchReviews = async () => {
     if (!user?.id) return;
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/tutor/${user.id}`);
+      const response = await fetchWithAuth(`/reviews/tutor/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setReviews(Array.isArray(data) ? data : []);
@@ -78,10 +77,7 @@ export default function TutorDashboard() {
   const confirmBooking = async (bookingId: string) => {
     setUpdating(bookingId);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingId}/confirm`, {
-        method: 'PATCH',
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth(`/bookings/${bookingId}/confirm`, { method: 'PATCH' });
       
       if (response.ok) {
         ErrorHandler.success('Booking confirmed successfully');
@@ -100,10 +96,7 @@ export default function TutorDashboard() {
   const completeBooking = async (bookingId: string) => {
     setUpdating(bookingId);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/bookings/${bookingId}/complete`, {
-        method: 'PATCH',
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth(`/tutors/bookings/${bookingId}/complete`, { method: 'PATCH' });
       
       if (response.ok) {
         ErrorHandler.success('Session completed successfully');

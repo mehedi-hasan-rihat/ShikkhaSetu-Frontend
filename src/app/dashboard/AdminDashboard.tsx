@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ErrorHandler } from '@/utils/errorHandler';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface User {
   id: string;
@@ -45,9 +46,9 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     try {
       const [usersRes, bookingsRes, categoriesRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/users`, { credentials: 'include' }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/bookings`, { credentials: 'include' }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, { credentials: 'include' })
+        fetchWithAuth('/admin/users'),
+        fetchWithAuth('/admin/bookings'),
+        fetchWithAuth('/admin/categories')
       ]);
 
       if (usersRes.ok) {
@@ -77,10 +78,8 @@ export default function AdminDashboard() {
   const toggleUserStatus = async (userId: string, currentStatus: string) => {
     try {
       const newStatus = currentStatus === 'ACTIVE' ? 'BANNED' : 'ACTIVE';
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/status`, {
+      const response = await fetchWithAuth(`/admin/users/${userId}/status`, {
         method: 'PATCH',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       });
       
@@ -98,10 +97,7 @@ export default function AdminDashboard() {
 
   const deleteCategory = async (categoryId: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories/${categoryId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth(`/admin/categories/${categoryId}`, { method: 'DELETE' });
       
       if (response.ok) {
         setCategories(categories.filter(c => c.id !== categoryId));
@@ -117,10 +113,8 @@ export default function AdminDashboard() {
 
   const createCategory = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, {
+      const response = await fetchWithAuth('/admin/categories', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newCategory)
       });
       
