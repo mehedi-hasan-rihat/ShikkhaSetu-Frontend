@@ -17,6 +17,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = async () => {
         await authClient.signOut();
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("auth_token");
+        }
     };
 
     const value = {

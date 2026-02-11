@@ -8,15 +8,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for session token in cookies
-  const sessionToken = request.cookies.get("better-auth.session_token");
+  // Check for Authorization header with Bearer token
+  const authHeader = request.headers.get("authorization");
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
 
   //* User is not authenticated at all
-  if (!sessionToken) {
+  if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Allow access if session exists
+  // Allow access if token exists
   return NextResponse.next();
 }
 

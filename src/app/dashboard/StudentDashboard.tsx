@@ -5,9 +5,9 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
-
 import ReviewModal from '@/components/ReviewModal';
 import { ErrorHandler } from '@/utils/errorHandler';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface Booking {
   id: string;
@@ -46,9 +46,7 @@ export default function StudentDashboard() {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth('/bookings');
       if (response.ok) {
         const data = await response.json();
         setBookings(Array.isArray(data) ? data : []);
@@ -75,10 +73,7 @@ export default function StudentDashboard() {
   const cancelBooking = async (bookingId: string) => {
     setUpdating(bookingId);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/students/bookings/${bookingId}/cancel`, {
-        method: 'PATCH',
-        credentials: 'include'
-      });
+      const response = await fetchWithAuth(`/students/bookings/${bookingId}/cancel`, { method: 'PATCH' });
       
       if (response.ok) {
         ErrorHandler.success('Booking cancelled successfully');

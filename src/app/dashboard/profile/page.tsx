@@ -5,6 +5,8 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
+import { ErrorHandler } from '@/utils/errorHandler';
 
 interface Category {
     id: string;
@@ -67,9 +69,7 @@ export default function ProfilePage() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, {
-                credentials: 'include'
-            });
+            const response = await fetchWithAuth('/admin/categories');
             if (response.ok) {
                 const data = await response.json();
                 setCategories(data);
@@ -85,13 +85,7 @@ export default function ProfilePage() {
             if (user?.role === 'TUTOR') endpoint = '/tutors/profile';
             if (user?.role === 'ADMIN') endpoint = '/admin/profile';
             
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetchWithAuth(endpoint);
             
             if (response.ok) {
                 const data = await response.json();
@@ -143,12 +137,8 @@ export default function ProfilePage() {
             if (user?.role === 'TUTOR') endpoint = '/tutors/profile';
             if (user?.role === 'ADMIN') endpoint = '/admin/profile';
             
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+            const response = await fetchWithAuth(endpoint, {
                 method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify(user?.role === 'STUDENT' || user?.role === 'ADMIN' ? {
                     name: formData.name,
                     phone: formData.phone
@@ -162,10 +152,12 @@ export default function ProfilePage() {
             });
             
             if (response.ok) {
-                alert('Profile updated successfully!');
+                ErrorHandler.success('Profile updated successfully!');
+            } else {
+                ErrorHandler.error('Failed to update profile');
             }
         } catch (error) {
-            console.error('Failed to update profile:', error);
+            ErrorHandler.handleApiError(error, 'Update profile');
         } finally {
             setLoading(false);
         }
