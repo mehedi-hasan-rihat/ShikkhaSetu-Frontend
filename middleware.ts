@@ -8,12 +8,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for Authorization header with Bearer token
-  const authHeader = request.headers.get("authorization");
-  const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
+  // Check for session token in cookies (better-auth stores it there)
+  const sessionToken = request.cookies.get("better-auth.session_token");
 
   //* User is not authenticated at all
-  if (!token) {
+  if (!sessionToken) {
     console.log("Middleware: No token found, redirecting to login");
     return NextResponse.redirect(new URL("/login", request.url));
   }
