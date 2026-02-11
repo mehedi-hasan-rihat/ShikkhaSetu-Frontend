@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ErrorHandler } from '@/utils/errorHandler';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface TutorProfile {
   id: string;
@@ -46,9 +47,8 @@ export default function TutorDetailsPage() {
   const handleSlotBooking = async (slotId: string) => {
     setBooking(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tutorId: tutor?.id,

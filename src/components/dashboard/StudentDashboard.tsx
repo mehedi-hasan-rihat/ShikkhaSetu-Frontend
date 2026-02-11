@@ -5,6 +5,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface Booking {
     id: string;
@@ -26,13 +27,7 @@ export default function StudentDashboard() {
 
     const fetchBookings = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/bookings`);
             
             if (response.ok) {
                 const data = await response.json();
