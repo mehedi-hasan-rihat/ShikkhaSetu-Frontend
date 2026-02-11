@@ -14,6 +14,7 @@ export async function middleware(request: NextRequest) {
 
   //* User is not authenticated at all
   if (!token) {
+    console.log("Middleware: No token found, redirecting to login");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
